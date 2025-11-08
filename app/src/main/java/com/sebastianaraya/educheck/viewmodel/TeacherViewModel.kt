@@ -9,11 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-/**
- * 💡 TeacherViewModel.kt — Versión final y sincronizada
- * Gestiona la lógica de negocio y validaciones de TeacherEntity.
- * Conecta la capa UI (Compose) con el Repository y Room.
- */
 class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() {
 
     // 🔹 Estados observables para la UI
@@ -29,7 +24,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
     private val _loginError = MutableStateFlow<String?>(null)
     val loginError: StateFlow<String?> = _loginError
 
-    // 📘 Cargar docentes desde la base de datos
+    //  Cargar docentes desde la base de datos
     fun loadTeachers() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -38,7 +33,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         }
     }
 
-    // 🧩 Registrar nuevo docente (con validación)
+    //  Registrar nuevo docente (con validación)
     fun registerTeacher(nombre: String, correo: String, password: String, confirmarPassword: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -71,7 +66,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         }
     }
 
-    // 🔍 Login validado
+    //  Login validado
     suspend fun loginUser(correo: String, password: String): TeacherEntity? {
         _isLoading.value = true
         _loginError.value = null
@@ -82,7 +77,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         return user
     }
 
-    // 🧠 Validación de datos antes de registrar
+    //  Validación de datos antes de registrar
     private fun validateTeacher(
         nombre: String,
         correo: String,
@@ -98,7 +93,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         }
     }
 
-    // ✏️ Actualizar RUT del docente
+    //  Actualizar RUT del docente
     suspend fun updateRut(nombre: String, nuevoRut: String): Boolean {
         return try {
             val teacher = repository.getAllTeachers().find { it.nombre == nombre }
@@ -111,7 +106,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         }
     }
 
-    // 🔁 Actualizar datos completos del docente
+    //  Actualizar datos completos del docente
     fun updateTeacher(teacher: TeacherEntity) {
         viewModelScope.launch {
             repository.updateTeacher(teacher)
@@ -119,7 +114,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         }
     }
 
-    // 🗑️ Eliminar todos los docentes registrados
+    //  Eliminar todos los docentes registrados
     fun clearAllTeachers() {
         viewModelScope.launch {
             repository.deleteAllTeachers()
@@ -129,7 +124,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
 }
 
 /**
- * 🏗️ Factory para crear TeacherViewModel sin acceso directo al contexto.
+  Factory para crear TeacherViewModel sin acceso directo al contexto.
  */
 class TeacherViewModelFactory(private val repository: TeacherRepository) :
     ViewModelProvider.Factory {

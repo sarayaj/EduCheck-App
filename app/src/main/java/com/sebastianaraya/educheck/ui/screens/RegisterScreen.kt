@@ -1,4 +1,5 @@
 package com.sebastianaraya.educheck.ui.screens
+// Pantalla de registro de docentes conectada al TeacherViewModel (lógica + UI).
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -31,11 +32,6 @@ import com.sebastianaraya.educheck.viewmodel.TeacherViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/**
- * 💡 RegisterScreen.kt — Versión final (MVVM)
- * Conecta la UI con TeacherViewModel y muestra validaciones visuales.
- * Cumple 100% la rúbrica: modularidad, retroalimentación y feedback.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
@@ -45,24 +41,24 @@ fun RegisterScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    // 🧠 Estados locales
+    // Estados de los campos
     var nombre by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmarPassword by remember { mutableStateOf("") }
     var isVisible by remember { mutableStateOf(false) }
 
-    // 🔄 Estados del ViewModel
+    // Estados del ViewModel
     val isLoading by teacherViewModel.isLoading.collectAsState()
     val formError by teacherViewModel.formError.collectAsState()
 
-    // ✨ Animación de entrada
+    // Animación de aparición
     LaunchedEffect(Unit) {
         delay(300)
         isVisible = true
     }
 
-    // 🎨 Fondo institucional degradado
+    // Fondo con degradado azul
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(Color(0xFF000428), Color(0xFF004E92))
     )
@@ -72,7 +68,7 @@ fun RegisterScreen(
             .fillMaxSize()
             .background(brush = gradientBrush)
     ) {
-        // 🔵 Círculos decorativos
+        // Círculos decorativos
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 color = Color.White.copy(alpha = 0.05f),
@@ -86,7 +82,7 @@ fun RegisterScreen(
             )
         }
 
-        // 🎞 Contenido principal animado
+        // Contenido principal animado
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(),
@@ -99,7 +95,7 @@ fun RegisterScreen(
                     .padding(top = 80.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 🏷️ Título
+                // Título de pantalla
                 Text(
                     text = "Crear cuenta docente",
                     style = TextStyle(
@@ -110,102 +106,76 @@ fun RegisterScreen(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // 🧍 Nombre
+                // Campo nombre
                 OutlinedTextField(
                     value = nombre,
                     onValueChange = { nombre = it },
                     label = { Text("Nombre completo", color = Color.LightGray) },
-                    leadingIcon = {
-                        Icon(Icons.Default.Person, contentDescription = null, tint = Color.LightGray)
-                    },
+                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color.LightGray) },
                     singleLine = true,
                     colors = textFieldColors(),
                     modifier = Modifier.fillMaxWidth(),
                     isError = nombre.isBlank(),
-                    supportingText = {
-                        if (nombre.isBlank())
-                            Text("Campo obligatorio", color = Color(0xFFFF6B6B))
-                    }
+                    supportingText = { if (nombre.isBlank()) Text("Campo obligatorio", color = Color(0xFFFF6B6B)) }
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // 📧 Correo
+                // Campo correo
                 OutlinedTextField(
                     value = correo,
                     onValueChange = { correo = it },
                     label = { Text("Correo electrónico", color = Color.LightGray) },
-                    leadingIcon = {
-                        Icon(Icons.Default.Email, contentDescription = null, tint = Color.LightGray)
-                    },
+                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color.LightGray) },
                     singleLine = true,
                     colors = textFieldColors(),
                     modifier = Modifier.fillMaxWidth(),
                     isError = !correo.contains("@"),
-                    supportingText = {
-                        if (!correo.contains("@"))
-                            Text("Correo inválido", color = Color(0xFFFF6B6B))
-                    }
+                    supportingText = { if (!correo.contains("@")) Text("Correo inválido", color = Color(0xFFFF6B6B)) }
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // 🔒 Contraseña
+                // Campo contraseña
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Contraseña (mínimo 6 caracteres)", color = Color.LightGray) },
-                    leadingIcon = {
-                        Icon(Icons.Default.Lock, contentDescription = null, tint = Color.LightGray)
-                    },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.LightGray) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     colors = textFieldColors(),
                     modifier = Modifier.fillMaxWidth(),
                     isError = password.length < 6,
-                    supportingText = {
-                        if (password.length < 6)
-                            Text("Debe tener al menos 6 caracteres", color = Color(0xFFFF6B6B))
-                    }
+                    supportingText = { if (password.length < 6) Text("Debe tener al menos 6 caracteres", color = Color(0xFFFF6B6B)) }
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // 🔁 Confirmar contraseña
+                // Confirmar contraseña
                 OutlinedTextField(
                     value = confirmarPassword,
                     onValueChange = { confirmarPassword = it },
                     label = { Text("Confirmar contraseña", color = Color.LightGray) },
-                    leadingIcon = {
-                        Icon(Icons.Default.Lock, contentDescription = null, tint = Color.LightGray)
-                    },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.LightGray) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     colors = textFieldColors(),
                     modifier = Modifier.fillMaxWidth(),
                     isError = confirmarPassword != password,
-                    supportingText = {
-                        if (confirmarPassword != password)
-                            Text("Las contraseñas no coinciden", color = Color(0xFFFF6B6B))
-                    }
+                    supportingText = { if (confirmarPassword != password) Text("Las contraseñas no coinciden", color = Color(0xFFFF6B6B)) }
                 )
 
                 Spacer(modifier = Modifier.height(25.dp))
 
-                // 🟦 Botón Registrar
+                // Botón de registro
                 Button(
                     onClick = {
                         scope.launch {
-                            teacherViewModel.registerTeacher(
-                                nombre,
-                                correo,
-                                password,
-                                confirmarPassword
-                            )
-
+                            teacherViewModel.registerTeacher(nombre, correo, password, confirmarPassword)
                             delay(800)
                             if (teacherViewModel.formError.value == null) {
-                                Toast.makeText(context, "Registro exitoso 🎉", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
                                 navController.navigate("login")
                             }
                         }
@@ -233,7 +203,7 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ❌ Mensaje de error global
+                // Muestra mensaje de error
                 if (!formError.isNullOrEmpty()) {
                     Text(
                         text = formError!!,
@@ -245,7 +215,7 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // 🔙 Enlace de retorno
+                // Enlace a login
                 TextButton(onClick = { navController.navigate("login") }) {
                     Text("¿Ya tienes cuenta? Inicia sesión", color = Color.LightGray)
                 }
@@ -254,9 +224,7 @@ fun RegisterScreen(
     }
 }
 
-/**
- * 🎨 Estilo unificado para campos de texto
- */
+// Estilo visual unificado para los campos de texto
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun textFieldColors(): TextFieldColors {
@@ -272,3 +240,5 @@ private fun textFieldColors(): TextFieldColors {
         unfocusedLabelColor = Color.LightGray
     )
 }
+
+// Recordatorio: esta pantalla crea nuevos docentes y valida los datos antes de guardarlos en Room.

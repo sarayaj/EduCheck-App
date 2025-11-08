@@ -1,4 +1,5 @@
 package com.sebastianaraya.educheck.ui.screens
+// Pantalla de perfil del docente. Permite actualizar su RUT y usar la cámara.
 
 import android.Manifest
 import android.graphics.Bitmap
@@ -41,11 +42,6 @@ import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-/**
- * 💡 ProfileScreen.kt — Versión MVVM
- * Pantalla de perfil conectada al TeacherViewModel.
- * Cumple criterios de la rúbrica: arquitectura limpia, modularidad, validaciones y recursos nativos.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewModel) {
@@ -53,15 +49,16 @@ fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewMod
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // Datos del usuario (en un caso real podrían venir del ViewModel o DB)
+    // Datos del usuario
     val nombre by remember { mutableStateOf("Sebastián Araya") }
     val correo by remember { mutableStateOf("admin@educheck.cl") }
     var rut by remember { mutableStateOf("") }
 
+    // Estados de cámara
     var capturedImage by remember { mutableStateOf<Bitmap?>(null) }
     var showCamera by remember { mutableStateOf(false) }
 
-    // 🎨 Fondo degradado institucional
+    // Fondo azul degradado
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(Color(0xFF001F3F), Color(0xFF004E92))
     )
@@ -89,7 +86,7 @@ fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewMod
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 🔹 Título
+            // Título principal
             Text(
                 text = "Mi Perfil",
                 color = Color.White,
@@ -104,7 +101,7 @@ fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewMod
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 🧍 Imagen de perfil
+            // Imagen o ícono del usuario
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -121,22 +118,14 @@ fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewMod
                             .clip(CircleShape)
                     )
                 } else {
-                    Icon(
-                        Icons.Default.Person,
-                        contentDescription = null,
-                        tint = Color(0xFF87CEFA),
-                        modifier = Modifier.size(80.dp)
-                    )
+                    Icon(Icons.Default.Person, contentDescription = null, tint = Color(0xFF87CEFA), modifier = Modifier.size(80.dp))
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 🎥 Botones de cámara
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            // Botones de cámara
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(
                     onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E90FF)),
@@ -160,7 +149,7 @@ fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewMod
                 }
             }
 
-            // 🎥 Cámara en miniatura
+            // Vista previa de la cámara
             if (showCamera) {
                 CameraPreviewSmall(
                     lifecycleOwner = lifecycleOwner,
@@ -169,24 +158,20 @@ fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewMod
                 ) { bitmap ->
                     capturedImage = bitmap
                     showCamera = false
-                    Toast.makeText(context, "📸 Foto capturada correctamente", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Foto capturada correctamente", Toast.LENGTH_SHORT).show()
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // 🧾 Campos de datos
+            // Campos de perfil
             OutlinedTextField(
                 value = nombre,
                 onValueChange = {},
                 label = { Text("Nombre completo") },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 readOnly = true,
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF1E90FF),
-                    focusedTextColor = Color.White
-                )
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -197,11 +182,7 @@ fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewMod
                 label = { Text("Correo electrónico") },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 readOnly = true,
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF1E90FF),
-                    focusedTextColor = Color.White
-                )
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -211,29 +192,24 @@ fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewMod
                 onValueChange = { rut = it },
                 label = { Text("RUT") },
                 leadingIcon = { Icon(Icons.Default.Badge, contentDescription = null) },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF1E90FF),
-                    focusedTextColor = Color.White
-                )
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 💾 Botón Guardar
+            // Guardar cambios
             Button(
                 onClick = {
                     if (rut.isNotBlank()) {
                         scope.launch {
                             val success = teacherViewModel.updateRut(nombre, rut)
-                            if (success) {
-                                Toast.makeText(context, "✅ RUT actualizado correctamente", Toast.LENGTH_SHORT).show()
-                            } else {
-                                Toast.makeText(context, "❌ Error al actualizar RUT", Toast.LENGTH_SHORT).show()
-                            }
+                            if (success)
+                                Toast.makeText(context, "RUT actualizado correctamente", Toast.LENGTH_SHORT).show()
+                            else
+                                Toast.makeText(context, "Error al actualizar RUT", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(context, "⚠ Debes ingresar un RUT válido", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Debes ingresar un RUT válido", Toast.LENGTH_SHORT).show()
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00B894)),
@@ -247,7 +223,7 @@ fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewMod
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // 🔙 Volver al menú
+            // Volver al menú principal
             Button(
                 onClick = { navController.navigate("home") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E90FF)),
@@ -261,9 +237,7 @@ fun ProfileScreen(navController: NavController, teacherViewModel: TeacherViewMod
     }
 }
 
-/**
- * 📸 Vista de cámara en miniatura — estable y segura
- */
+// Vista pequeña de cámara (usa CameraX y PreviewView)
 @Composable
 fun CameraPreviewSmall(
     lifecycleOwner: androidx.lifecycle.LifecycleOwner,
@@ -282,27 +256,19 @@ fun CameraPreviewSmall(
             .background(Color.Black),
         contentAlignment = Alignment.BottomCenter
     ) {
+        // Vista en vivo de la cámara
         AndroidView(factory = { ctx ->
-            val previewView = PreviewView(ctx).apply {
-                scaleType = PreviewView.ScaleType.FILL_CENTER
-            }
+            val previewView = PreviewView(ctx).apply { scaleType = PreviewView.ScaleType.FILL_CENTER }
 
             val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
-                val preview = Preview.Builder().build().also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
-                }
+                val preview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
                 val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
                 try {
                     cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(
-                        lifecycleOwner,
-                        cameraSelector,
-                        preview,
-                        imageCapture
-                    )
+                    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -310,7 +276,7 @@ fun CameraPreviewSmall(
             previewView
         })
 
-        // 📷 Botón para tomar foto
+        // Botón de captura
         Button(
             onClick = {
                 try {
@@ -325,19 +291,17 @@ fun CameraPreviewSmall(
                                 android.os.Handler(context.mainLooper).postDelayed({
                                     val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
                                     if (bitmap != null) onImageCaptured(bitmap)
-                                    else Toast.makeText(context, "⚠ No se pudo leer la imagen", Toast.LENGTH_SHORT).show()
+                                    else Toast.makeText(context, "No se pudo leer la imagen", Toast.LENGTH_SHORT).show()
                                 }, 150)
                             }
 
                             override fun onError(exception: ImageCaptureException) {
-                                exception.printStackTrace()
-                                Toast.makeText(context, "❌ Error al capturar: ${exception.message}", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "Error al capturar: ${exception.message}", Toast.LENGTH_LONG).show()
                             }
                         }
                     )
                 } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(context, "❌ Error inesperado al guardar la foto", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Error inesperado al guardar la foto", Toast.LENGTH_LONG).show()
                 }
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E90FF)),
@@ -350,3 +314,5 @@ fun CameraPreviewSmall(
         }
     }
 }
+
+// Recordatorio: esta pantalla combina la cámara con datos de perfil y conexión a ViewModel.

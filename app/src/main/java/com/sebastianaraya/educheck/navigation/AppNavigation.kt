@@ -1,4 +1,5 @@
 package com.sebastianaraya.educheck.navigation
+// Controla la navegación entre pantallas en EduCheck usando Jetpack Compose Navigation.
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -9,24 +10,20 @@ import com.sebastianaraya.educheck.ui.screens.*
 import com.sebastianaraya.educheck.viewmodel.TeacherViewModel
 import com.sebastianaraya.educheck.viewmodel.AttendanceViewModel
 
-/**
- * 💡 AppNavigation.kt — versión final MVVM
- * Controlador central de rutas de la aplicación EduCheck.
- * Gestiona toda la navegación entre pantallas usando Jetpack Compose Navigation.
- * Recibe los ViewModels desde MainActivity para compartir datos y lógica.
- */
 @Composable
 fun AppNavigation(
     teacherViewModel: TeacherViewModel,
     attendanceViewModel: AttendanceViewModel
 ) {
+    // Controlador principal de navegación
     val navController: NavHostController = rememberNavController()
 
+    // Mapa de rutas de la aplicación
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = "login" // Pantalla inicial
     ) {
-        // 🔹 Pantalla de inicio de sesión
+        // Pantalla de inicio de sesión
         composable("login") {
             LoginScreen(
                 navController = navController,
@@ -34,7 +31,7 @@ fun AppNavigation(
             )
         }
 
-        // 🔹 Registro de docentes
+        // Registro de docentes nuevos
         composable("register") {
             RegisterScreen(
                 navController = navController,
@@ -42,12 +39,12 @@ fun AppNavigation(
             )
         }
 
-        // 🔹 Menú principal
+        // Menú principal (Home)
         composable("home") {
             HomeScreen(navController = navController)
         }
 
-        // 🔹 Registro de asistencia (usa AttendanceViewModel)
+        // Registro de asistencia (usa ViewModel de asistencia)
         composable("asistencia") {
             AttendanceScreen(
                 navController = navController,
@@ -55,7 +52,7 @@ fun AppNavigation(
             )
         }
 
-        // 🔹 Lista de docentes
+        // Lista de docentes registrados (Room + ViewModel)
         composable("teacher_list") {
             TeacherListScreen(
                 navController = navController,
@@ -63,12 +60,12 @@ fun AppNavigation(
             )
         }
 
-        // 🔹 Lista de asistencias registradas
+        // Lista de asistencias almacenadas en Room
         composable("attendance_list") {
             AttendanceListScreen(navController = navController)
         }
 
-        // 🔹 Perfil de usuario
+        // Perfil del usuario actual
         composable("profile") {
             ProfileScreen(
                 navController = navController,
@@ -77,3 +74,5 @@ fun AppNavigation(
         }
     }
 }
+
+// Recordatorio: este archivo gestiona todas las rutas de la app y conecta las pantallas con sus ViewModels.

@@ -1,4 +1,5 @@
 package com.sebastianaraya.educheck.ui.screens
+// Pantalla de inicio de sesión conectada al TeacherViewModel (login y validaciones).
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -30,10 +31,6 @@ import com.sebastianaraya.educheck.viewmodel.TeacherViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/**
- * 💡 LoginScreen.kt — Versión final sincronizada con el ViewModel
- * Usa loginUser() que devuelve TeacherEntity? y valida correctamente el acceso.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
@@ -43,26 +40,26 @@ fun LoginScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    // 🧠 Estados locales
+    // Campos de texto
     var correo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showErrors by remember { mutableStateOf(false) }
     var isVisible by remember { mutableStateOf(false) }
 
-    // 🌐 Estados globales del ViewModel
+    // Estados del ViewModel
     val isLoading by teacherViewModel.isLoading.collectAsState()
     val formError by teacherViewModel.formError.collectAsState()
     val loginError by teacherViewModel.loginError.collectAsState()
 
     val isValid = correo.contains("@") && password.isNotBlank()
 
-    // ✨ Animación de aparición
+    // Animación de entrada
     LaunchedEffect(Unit) {
         delay(300)
         isVisible = true
     }
 
-    // 🎨 Fondo con gradiente institucional
+    // Fondo azul degradado
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(Color(0xFF000428), Color(0xFF004E92))
     )
@@ -72,7 +69,7 @@ fun LoginScreen(
             .fillMaxSize()
             .background(brush = gradientBrush)
     ) {
-        // 🔵 Círculos decorativos
+        // Círculos decorativos
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 color = Color.White.copy(alpha = 0.05f),
@@ -86,7 +83,7 @@ fun LoginScreen(
             )
         }
 
-        // 🎬 Contenido principal animado
+        // Contenido principal
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(),
@@ -99,7 +96,7 @@ fun LoginScreen(
                     .padding(top = 100.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 🏷️ Título
+                // Título de la app
                 Text(
                     text = "EduCheck",
                     style = TextStyle(
@@ -120,53 +117,47 @@ fun LoginScreen(
                     modifier = Modifier.padding(bottom = 40.dp)
                 )
 
-                // 🧾 Correo
+                // Campo correo
                 OutlinedTextField(
                     value = correo,
                     onValueChange = { correo = it },
                     label = { Text("Correo electrónico", color = Color.LightGray) },
                     isError = showErrors && !correo.contains("@"),
-                    leadingIcon = {
-                        Icon(Icons.Default.Email, contentDescription = null, tint = Color.LightGray)
-                    },
+                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color.LightGray) },
                     singleLine = true,
                     shape = RoundedCornerShape(16.dp),
                     colors = textFieldColors(),
                     supportingText = {
-                        if (showErrors && !correo.contains("@")) {
+                        if (showErrors && !correo.contains("@"))
                             Text("Correo inválido", color = Color(0xFFFF6B6B))
-                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 🔒 Contraseña
+                // Campo contraseña
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Contraseña", color = Color.LightGray) },
                     isError = showErrors && password.isBlank(),
-                    leadingIcon = {
-                        Icon(Icons.Default.Lock, contentDescription = null, tint = Color.LightGray)
-                    },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.LightGray) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions.Default,
                     shape = RoundedCornerShape(16.dp),
                     colors = textFieldColors(),
                     supportingText = {
-                        if (showErrors && password.isBlank()) {
+                        if (showErrors && password.isBlank())
                             Text("Campo obligatorio", color = Color(0xFFFF6B6B))
-                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // 🔘 Botón de ingreso
+                // Botón ingresar
                 Button(
                     onClick = {
                         showErrors = true
@@ -176,18 +167,10 @@ fun LoginScreen(
                                 val user = teacherViewModel.loginUser(correo, password)
 
                                 if (user != null) {
-                                    Toast.makeText(
-                                        context,
-                                        "Bienvenido ${user.nombre} 👋",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(context, "Bienvenido ${user.nombre}", Toast.LENGTH_SHORT).show()
                                     navController.navigate("home")
                                 } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Credenciales incorrectas ❌",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(context, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
@@ -200,8 +183,7 @@ fun LoginScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF1E90FF),
                         contentColor = Color.White
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(8.dp)
+                    )
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
@@ -214,7 +196,7 @@ fun LoginScreen(
                     }
                 }
 
-                // ❗ Error general
+                // Mensajes de error
                 if (!formError.isNullOrEmpty()) {
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(formError!!, color = Color(0xFFFF6B6B), fontSize = 14.sp)
@@ -227,7 +209,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 🆕 Enlace de registro
+                // Enlace de registro
                 TextButton(onClick = { navController.navigate("register") }) {
                     Text(
                         text = "¿No tienes cuenta? Regístrate aquí",
@@ -240,9 +222,7 @@ fun LoginScreen(
     }
 }
 
-/**
- * 🎨 Paleta de colores unificada para TextFields
- */
+// Estilo visual para los campos de texto
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun textFieldColors(): TextFieldColors {
@@ -260,3 +240,5 @@ private fun textFieldColors(): TextFieldColors {
         unfocusedLeadingIconColor = Color.LightGray
     )
 }
+
+// Recordatorio: esta pantalla valida credenciales con el ViewModel y redirige a Home si son correctas.

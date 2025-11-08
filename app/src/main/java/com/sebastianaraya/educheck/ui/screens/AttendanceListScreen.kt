@@ -1,4 +1,5 @@
 package com.sebastianaraya.educheck.ui.screens
+// Pantalla que muestra todas las asistencias registradas almacenadas en Room.
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -30,12 +31,12 @@ fun AttendanceListScreen(navController: NavController) {
     var registros by remember { mutableStateOf<List<AttendanceEntity>>(emptyList()) }
     var showDialog by remember { mutableStateOf(false) }
 
-    // 🎨 Fondo institucional
+    // Fondo institucional azul degradado
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(Color(0xFF000428), Color(0xFF004E92))
     )
 
-    // 📦 Cargar datos desde Room cada vez que se abre la pantalla
+    // Carga los datos desde Room al entrar en la pantalla
     LaunchedEffect(Unit) {
         val dao = AppDatabase.getDatabase(context).attendanceDao()
         registros = dao.getAllAttendances()
@@ -52,6 +53,7 @@ fun AttendanceListScreen(navController: NavController) {
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Título principal
             Text(
                 text = "Asistencias Registradas",
                 color = Color.White,
@@ -60,10 +62,12 @@ fun AttendanceListScreen(navController: NavController) {
                 modifier = Modifier.padding(bottom = 20.dp)
             )
 
-            // 🧾 Lista de registros
+            // Si no hay registros
             if (registros.isEmpty()) {
                 Text("No hay asistencias registradas aún.", color = Color(0xFFB0C4DE))
-            } else {
+            } 
+            // Si hay registros, muestra lista
+            else {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -80,13 +84,9 @@ fun AttendanceListScreen(navController: NavController) {
                                     .fillMaxWidth()
                                     .padding(14.dp)
                             ) {
-                                // 👤 Nombre
+                                // Nombre del estudiante
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        Icons.Default.Person,
-                                        contentDescription = null,
-                                        tint = Color(0xFF1E90FF)
-                                    )
+                                    Icon(Icons.Default.Person, contentDescription = null, tint = Color(0xFF1E90FF))
                                     Spacer(Modifier.width(8.dp))
                                     Text(
                                         text = r.nombre.ifBlank { "—" },
@@ -98,13 +98,9 @@ fun AttendanceListScreen(navController: NavController) {
 
                                 Spacer(Modifier.height(4.dp))
 
-                                // 🪪 RUT
+                                // RUT
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        Icons.Default.Badge,
-                                        contentDescription = null,
-                                        tint = Color(0xFF1E90FF)
-                                    )
+                                    Icon(Icons.Default.Badge, contentDescription = null, tint = Color(0xFF1E90FF))
                                     Spacer(Modifier.width(8.dp))
                                     Text(
                                         text = "RUT: ${r.rut.ifBlank { "—" }}",
@@ -115,33 +111,17 @@ fun AttendanceListScreen(navController: NavController) {
 
                                 Spacer(Modifier.height(4.dp))
 
-                                // 📅 Fecha y hora
+                                // Fecha y hora
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        Icons.Default.CalendarMonth,
-                                        contentDescription = null,
-                                        tint = Color(0xFF1E90FF)
-                                    )
+                                    Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = Color(0xFF1E90FF))
                                     Spacer(Modifier.width(8.dp))
-                                    Text(
-                                        text = "Fecha: ${r.fecha}",
-                                        color = Color(0xFFD0E0FF),
-                                        fontSize = 14.sp
-                                    )
+                                    Text("Fecha: ${r.fecha}", color = Color(0xFFD0E0FF), fontSize = 14.sp)
 
                                     Spacer(Modifier.width(16.dp))
 
-                                    Icon(
-                                        Icons.Default.AccessTime,
-                                        contentDescription = null,
-                                        tint = Color(0xFF1E90FF)
-                                    )
+                                    Icon(Icons.Default.AccessTime, contentDescription = null, tint = Color(0xFF1E90FF))
                                     Spacer(Modifier.width(6.dp))
-                                    Text(
-                                        text = r.hora,
-                                        color = Color(0xFFD0E0FF),
-                                        fontSize = 14.sp
-                                    )
+                                    Text(r.hora, color = Color(0xFFD0E0FF), fontSize = 14.sp)
                                 }
                             }
                         }
@@ -151,11 +131,12 @@ fun AttendanceListScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // 🔘 Botones inferiores
+            // Botones inferiores
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Volver al menú principal
                 Button(
                     onClick = { navController.navigate("home") },
                     shape = RoundedCornerShape(12.dp),
@@ -166,6 +147,7 @@ fun AttendanceListScreen(navController: NavController) {
                     Text("Volver al menú", color = Color.White)
                 }
 
+                // Botón para limpiar registros
                 if (registros.isNotEmpty()) {
                     Button(
                         onClick = { showDialog = true },
@@ -179,7 +161,7 @@ fun AttendanceListScreen(navController: NavController) {
                 }
             }
 
-            // 🧹 Diálogo confirmación
+            // Diálogo de confirmación para eliminar registros
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
@@ -210,3 +192,5 @@ fun AttendanceListScreen(navController: NavController) {
         }
     }
 }
+
+// Recordatorio: esta pantalla lista todas las asistencias guardadas en Room y permite limpiarlas.

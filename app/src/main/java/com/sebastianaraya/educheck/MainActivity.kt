@@ -17,11 +17,9 @@ import com.sebastianaraya.educheck.viewmodel.TeacherViewModel
 import com.sebastianaraya.educheck.viewmodel.TeacherViewModelFactory
 import com.sebastianaraya.educheck.viewmodel.AttendanceViewModel
 
-/**
- * MainActivity.kt — versión final MVVM
- * Es el punto de inicio de la app. 
+
  * Inicializa el tema, los ViewModels y la navegación principal.
- */
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,8 +32,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background // Fondo según el tema
                 ) {
                     // Contexto y repositorio principal
-                    val context = LocalContext.current // Permite acceder a recursos del sistema
-                    val teacherRepository = TeacherRepository(context) // Maneja datos de docentes
+                    val context = LocalContext.current 
+                    val teacherRepository = TeacherRepository(context) 
 
                     // ViewModels globales
                     val teacherViewModel: TeacherViewModel = viewModel(
@@ -48,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     AppNavigation(
                         teacherViewModel = teacherViewModel,
                         attendanceViewModel = attendanceViewModel
-                    ) // Conecta las pantallas y mantiene los estados
+                    ) 
                 }
             }
         }

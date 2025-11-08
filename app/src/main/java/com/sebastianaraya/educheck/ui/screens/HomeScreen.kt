@@ -1,4 +1,5 @@
 package com.sebastianaraya.educheck.ui.screens
+// Pantalla principal del menú de inicio de la app. Conecta a todas las secciones.
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -29,11 +30,13 @@ import kotlinx.coroutines.delay
 fun HomeScreen(navController: NavController) {
     var isVisible by remember { mutableStateOf(false) }
 
+    // Animación de entrada
     LaunchedEffect(Unit) {
         delay(300)
         isVisible = true
     }
 
+    // Fondo azul degradado
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(Color(0xFF004E92), Color(0xFF000428))
     )
@@ -56,6 +59,7 @@ fun HomeScreen(navController: NavController) {
             ) {
                 Spacer(modifier = Modifier.height(40.dp))
 
+                // Título de bienvenida
                 Text(
                     text = "Bienvenido a EduCheck",
                     style = TextStyle(
@@ -74,6 +78,7 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(40.dp))
 
+                // Botones del menú principal
                 MainMenuButton(
                     text = "Registrar Asistencia",
                     icon = Icons.Default.CheckCircle,
@@ -92,7 +97,6 @@ fun HomeScreen(navController: NavController) {
                     onClick = { navController.navigate("teacher_list") }
                 )
 
-                // ✅ Botón funcional de perfil
                 MainMenuButton(
                     text = "Mi Perfil",
                     icon = Icons.Default.Person,
@@ -101,6 +105,7 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.weight(1f))
 
+                // Pie de pantalla
                 Text(
                     text = "Versión 1.0 - Duoc UC",
                     color = Color.LightGray.copy(alpha = 0.8f),
@@ -112,6 +117,7 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
+// Componente reutilizable de botón del menú principal
 @Composable
 fun MainMenuButton(
     text: String,
@@ -146,3 +152,5 @@ fun MainMenuButton(
         )
     }
 }
+
+// Recordatorio: esta pantalla sirve como punto central de navegación de toda la app.

@@ -1,9 +1,7 @@
 package com.sebastianaraya.educheck.ui.screens
+// Pantalla para registrar asistencias (con cámara simulada). Usa el AttendanceViewModel.
 
 import android.Manifest
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,14 +35,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.sebastianaraya.educheck.viewmodel.AttendanceViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/**
- * 💡 AttendanceScreen.kt — Versión MVVM
- * Registra la asistencia de estudiantes con soporte para cámara simulada.
- * Toda la lógica de persistencia y validación se delega al AttendanceViewModel.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceScreen(
@@ -55,17 +47,17 @@ fun AttendanceScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
 
-    // Estados locales
+    // Estados locales (UI)
     var scanning by remember { mutableStateOf(false) }
     val cameraPermissionGranted = remember { mutableStateOf(false) }
 
-    // Estados del ViewModel (reactivos)
+    // Estados del ViewModel (datos reactivos)
     val nombre by attendanceViewModel.nombre.collectAsState()
     val rut by attendanceViewModel.rut.collectAsState()
     val mensaje by attendanceViewModel.mensaje.collectAsState()
     val isLoading by attendanceViewModel.isLoading.collectAsState()
 
-    // Lanzador de permisos
+    // Solicitud de permiso de cámara
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -74,7 +66,7 @@ fun AttendanceScreen(
             Toast.makeText(context, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
     }
 
-    // 🎨 Fondo institucional
+    // Fondo con gradiente institucional
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(Color(0xFF000428), Color(0xFF004E92))
     )
@@ -90,7 +82,7 @@ fun AttendanceScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 🔷 Título
+            // Título
             Text(
                 text = "Registrar Asistencia",
                 color = Color.White,
@@ -105,7 +97,7 @@ fun AttendanceScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // 🧍 Nombre
+            // Campo Nombre
             OutlinedTextField(
                 value = nombre,
                 onValueChange = { attendanceViewModel.actualizarNombre(it) },
@@ -118,7 +110,7 @@ fun AttendanceScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 🪪 RUT
+            // Campo RUT
             OutlinedTextField(
                 value = rut,
                 onValueChange = { attendanceViewModel.actualizarRut(it) },
@@ -132,27 +124,24 @@ fun AttendanceScreen(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            // 🔘 Botón principal
+            // Botón Registrar asistencia
             Button(
-                onClick = {
-                    scope.launch {
-                        attendanceViewModel.registrarAsistencia(context)
-                    }
-                },
+                onClick = { scope.launch { attendanceViewModel.registrarAsistencia(context) } },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E90FF))
             ) {
-                if (isLoading) {
+                if (isLoading)
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                } else {
+                else {
                     Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
                     Text("Registrar", color = Color.White)
                 }
             }
 
+            // Mensaje de resultado (éxito o error)
             if (mensaje.isNotEmpty()) {
                 Text(
                     text = mensaje,
@@ -161,27 +150,18 @@ fun AttendanceScreen(
                 )
             }
 
-            Divider(
-                color = Color(0xFF334466),
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
+            Divider(color = Color(0xFF334466), thickness = 1.dp, modifier = Modifier.padding(vertical = 16.dp))
 
-            // 📷 Escaneo simulado
+            // Botón para simular escaneo de carnet
             Text("O escanear carnet (simulación):", color = Color.White, fontSize = 15.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Button(
                     onClick = {
-                        if (!cameraPermissionGranted.value) {
+                        if (!cameraPermissionGranted.value)
                             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-                        } else {
-                            scanning = true
-                        }
+                        else scanning = true
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4169E1)),
                     shape = RoundedCornerShape(10.dp)
@@ -198,6 +178,7 @@ fun AttendanceScreen(
                 }
             }
 
+            // Muestra vista de cámara simulada
             AnimatedVisibility(visible = scanning, enter = fadeIn(), exit = fadeOut()) {
                 CameraSimulationSection(
                     cameraPermissionGranted = cameraPermissionGranted.value,
@@ -208,20 +189,19 @@ fun AttendanceScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Navegación
             TextButton(onClick = { navController.navigate("attendance_list") }) {
-                Text("📋 Ver Asistencias Registradas", color = Color(0xFF87CEFA))
+                Text("Ver Asistencias Registradas", color = Color(0xFF87CEFA))
             }
 
             TextButton(onClick = { navController.navigate("home") }) {
-                Text("⬅️ Volver al menú", color = Color.LightGray)
+                Text("Volver al menú", color = Color.LightGray)
             }
         }
     }
 }
 
-/**
- * 🎥 Sección simulada de cámara
- */
+// Sección visual de cámara simulada
 @Composable
 fun CameraSimulationSection(
     cameraPermissionGranted: Boolean,
@@ -229,23 +209,18 @@ fun CameraSimulationSection(
     onSimulateCapture: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .height(140.dp)
+            modifier = Modifier.fillMaxWidth(0.9f).height(140.dp)
                 .background(Color.Black, RoundedCornerShape(12.dp)),
             contentAlignment = Alignment.Center
         ) {
-            if (cameraPermissionGranted) {
+            if (cameraPermissionGranted)
                 CameraPreviewView(lifecycleOwner = lifecycleOwner)
-            } else {
+            else
                 Text("Permiso de cámara requerido", color = Color.White)
-            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -262,13 +237,12 @@ fun CameraSimulationSection(
     }
 }
 
+// Vista previa de cámara (solo decorativa)
 @Composable
 fun CameraPreviewView(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
     val context = LocalContext.current
     AndroidView(factory = { ctx ->
-        val previewView = PreviewView(ctx).also {
-            it.scaleType = PreviewView.ScaleType.FILL_CENTER
-        }
+        val previewView = PreviewView(ctx).also { it.scaleType = PreviewView.ScaleType.FILL_CENTER }
         val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
@@ -286,9 +260,7 @@ fun CameraPreviewView(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
     })
 }
 
-/**
- * 🎨 Paleta de colores para campos
- */
+// Colores base para los campos de texto
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun textFieldColors(): TextFieldColors {
@@ -302,3 +274,5 @@ private fun textFieldColors(): TextFieldColors {
         cursorColor = Color.White
     )
 }
+
+// Recordatorio: pantalla para registrar asistencia manual o simulada. Usa ViewModel.

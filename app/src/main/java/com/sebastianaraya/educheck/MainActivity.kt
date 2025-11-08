@@ -1,5 +1,5 @@
 package com.sebastianaraya.educheck
-// Paquete principal del proyecto, organiza las clases dentro de la app.
+
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

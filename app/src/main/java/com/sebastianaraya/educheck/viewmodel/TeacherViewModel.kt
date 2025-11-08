@@ -1,4 +1,5 @@
 package com.sebastianaraya.educheck.viewmodel
+// Lógica principal que conecta la interfaz con los datos de los docentes.
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -11,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() {
 
-    // 🔹 Estados observables para la UI
+    // Estados que la interfaz puede observar
     private val _teachers = MutableStateFlow<List<TeacherEntity>>(emptyList())
     val teachers: StateFlow<List<TeacherEntity>> = _teachers
 
@@ -24,7 +25,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
     private val _loginError = MutableStateFlow<String?>(null)
     val loginError: StateFlow<String?> = _loginError
 
-    //  Cargar docentes desde la base de datos
+    // Cargar docentes desde la base de datos
     fun loadTeachers() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -33,7 +34,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         }
     }
 
-    //  Registrar nuevo docente (con validación)
+    // Registrar nuevo docente con validación previa
     fun registerTeacher(nombre: String, correo: String, password: String, confirmarPassword: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -66,7 +67,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         }
     }
 
-    //  Login validado
+    // Validar login con correo y contraseña
     suspend fun loginUser(correo: String, password: String): TeacherEntity? {
         _isLoading.value = true
         _loginError.value = null
@@ -77,7 +78,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         return user
     }
 
-    //  Validación de datos antes de registrar
+    // Validar los datos antes de registrar
     private fun validateTeacher(
         nombre: String,
         correo: String,
@@ -93,7 +94,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         }
     }
 
-    //  Actualizar RUT del docente
+    // Actualizar solo el RUT del docente
     suspend fun updateRut(nombre: String, nuevoRut: String): Boolean {
         return try {
             val teacher = repository.getAllTeachers().find { it.nombre == nombre }
@@ -106,7 +107,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         }
     }
 
-    //  Actualizar datos completos del docente
+    // Actualizar todos los datos del docente
     fun updateTeacher(teacher: TeacherEntity) {
         viewModelScope.launch {
             repository.updateTeacher(teacher)
@@ -114,7 +115,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
         }
     }
 
-    //  Eliminar todos los docentes registrados
+    // Eliminar todos los registros de docentes
     fun clearAllTeachers() {
         viewModelScope.launch {
             repository.deleteAllTeachers()
@@ -123,9 +124,7 @@ class TeacherViewModel(private val repository: TeacherRepository) : ViewModel() 
     }
 }
 
-/**
-  Factory para crear TeacherViewModel sin acceso directo al contexto.
- */
+// Factory para crear el ViewModel y pasarle el repositorio.
 class TeacherViewModelFactory(private val repository: TeacherRepository) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -136,3 +135,6 @@ class TeacherViewModelFactory(private val repository: TeacherRepository) :
         throw IllegalArgumentException("Clase ViewModel desconocida")
     }
 }
+
+// Recordatorio: este ViewModel maneja toda la lógica de registro, login y actualización de docentes.
+// La interfaz solo observa los cambios a través de los StateFlow.

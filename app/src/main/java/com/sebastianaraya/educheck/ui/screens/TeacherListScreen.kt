@@ -1,4 +1,5 @@
 package com.sebastianaraya.educheck.ui.screens
+// Pantalla que muestra los docentes guardados en Room, conectada al TeacherViewModel.
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,11 +24,6 @@ import com.sebastianaraya.educheck.data.local.TeacherEntity
 import com.sebastianaraya.educheck.viewmodel.TeacherViewModel
 import kotlinx.coroutines.launch
 
-/**
- * 💡 TeacherListScreen.kt — Versión final MVVM
- * Muestra la lista de docentes registrados, usando datos del TeacherViewModel.
- * Cumple con la rúbrica Duoc UC: arquitectura limpia, estados reactivos y UI profesional.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeacherListScreen(
@@ -36,17 +32,15 @@ fun TeacherListScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    // ✅ Estados reactivos desde el ViewModel
-    val teachers by teacherViewModel.teachers.collectAsState()
+    val teachers by teacherViewModel.teachers.collectAsState() // Lista de docentes
+    val isLoading by teacherViewModel.isLoading.collectAsState() // Estado de carga
 
-    val isLoading by teacherViewModel.isLoading.collectAsState()
-
-    // 🎨 Fondo degradado institucional
+    // Fondo con degradado azul
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(Color(0xFF000428), Color(0xFF004E92))
     )
 
-    // 🔄 Carga inicial de docentes (solo una vez)
+    // Cargar docentes al iniciar la pantalla
     LaunchedEffect(Unit) {
         teacherViewModel.loadTeachers()
     }
@@ -62,7 +56,7 @@ fun TeacherListScreen(
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 🔷 Título principal
+            // Título principal
             Text(
                 text = "Docentes Registrados",
                 color = Color.White,
@@ -86,12 +80,10 @@ fun TeacherListScreen(
                 textAlign = TextAlign.Center
             )
 
-            // 🔁 Indicador de carga
+            // Mostrar estado según carga o lista vacía
             if (isLoading) {
                 CircularProgressIndicator(color = Color.White)
-            }
-            // 📋 Lista de docentes
-            else if (teachers.isEmpty()) {
+            } else if (teachers.isEmpty()) {
                 Text(
                     text = "No hay docentes registrados.",
                     color = Color(0xFFB0C4DE),
@@ -104,14 +96,14 @@ fun TeacherListScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(teachers) { teacher ->
-                        TeacherCard(teacher = teacher)
+                        TeacherCard(teacher = teacher) // Muestra cada docente
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 🔙 Botón para volver al menú principal
+            // Botón para volver al menú
             Button(
                 onClick = { navController.navigate("home") },
                 shape = RoundedCornerShape(12.dp),
@@ -125,9 +117,7 @@ fun TeacherListScreen(
     }
 }
 
-/**
- * 🧩 Componente reutilizable: Tarjeta de docente
- */
+// Tarjeta con datos del docente (nombre y correo)
 @Composable
 fun TeacherCard(teacher: TeacherEntity) {
     Card(
@@ -165,3 +155,5 @@ fun TeacherCard(teacher: TeacherEntity) {
         }
     }
 }
+
+// Recordatorio: esta pantalla solo muestra datos ya guardados y permite volver al menú principal.

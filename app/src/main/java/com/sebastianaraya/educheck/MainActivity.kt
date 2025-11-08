@@ -1,4 +1,5 @@
 package com.sebastianaraya.educheck
+// Paquete principal del proyecto, organiza las clases dentro de la app.
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,36 +18,41 @@ import com.sebastianaraya.educheck.viewmodel.TeacherViewModelFactory
 import com.sebastianaraya.educheck.viewmodel.AttendanceViewModel
 
 /**
- * 💡 MainActivity.kt — versión final MVVM
- * Inicializa y entrega los ViewModels globales a toda la aplicación EduCheck.
- * Cumple con la rúbrica: arquitectura modular, reutilización y persistencia de datos.
+ * MainActivity.kt — versión final MVVM
+ * Es el punto de inicio de la app. 
+ * Inicializa el tema, los ViewModels y la navegación principal.
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            EduCheckTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    // ✅ Inicialización de contexto y repositorios
-                    val context = LocalContext.current
-                    val teacherRepository = TeacherRepository(context)
 
-                    // ✅ ViewModels globales
+        // Inicia la interfaz de usuario con Jetpack Compose
+        setContent {
+            EduCheckTheme { // Aplica el tema visual de la app
+                Surface(
+                    modifier = Modifier.fillMaxSize(), // Ocupa toda la pantalla
+                    color = MaterialTheme.colorScheme.background // Fondo según el tema
+                ) {
+                    // Contexto y repositorio principal
+                    val context = LocalContext.current // Permite acceder a recursos del sistema
+                    val teacherRepository = TeacherRepository(context) // Maneja datos de docentes
+
+                    // ViewModels globales
                     val teacherViewModel: TeacherViewModel = viewModel(
                         factory = TeacherViewModelFactory(teacherRepository)
-                    )
-                    val attendanceViewModel: AttendanceViewModel = viewModel()
+                    ) // Lógica de docentes (registro/login)
 
-                    // ✅ Navegación con ambos ViewModels inyectados
+                    val attendanceViewModel: AttendanceViewModel = viewModel() // Lógica de asistencia
+
+                    // Navegación entre pantallas
                     AppNavigation(
                         teacherViewModel = teacherViewModel,
                         attendanceViewModel = attendanceViewModel
-                    )
+                    ) // Conecta las pantallas y mantiene los estados
                 }
             }
         }
     }
 }
+
+// Recordatorio: aquí parte todo el proyecto. Se crean los ViewModels y se inicia la navegación general.
